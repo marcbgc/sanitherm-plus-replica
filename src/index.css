@@ -1,0 +1,69 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-navy: oklch(0.30 0.06 250);
+  --color-navy-light: oklch(0.35 0.06 250);
+  --color-navy-dark: oklch(0.22 0.06 250);
+  --color-fire: oklch(0.65 0.20 45);
+  --color-fire-light: oklch(0.72 0.18 45);
+  --color-fire-dark: oklch(0.55 0.20 45);
+  --color-warm-white: oklch(0.98 0.005 90);
+  --color-warm-gray: oklch(0.95 0.005 90);
+  --color-text: oklch(0.15 0.02 260);
+  --color-text-muted: oklch(0.45 0.02 260);
+  --font-display: 'Montserrat', sans-serif;
+  --font-sans: 'Inter', sans-serif;
+  --font-body: 'Inter', sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  color: var(--color-text);
+  background-color: var(--color-warm-white);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+}
+
+::selection {
+  background-color: oklch(0.65 0.20 45 / 0.3);
+}
+
+/* Fade-in animation (ersetzt framer-motion) */
+.fade-in {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+  will-change: opacity, transform;
+}
+
+.fade-in.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fade-in {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* Modal fade */
+.modal-backdrop {
+  animation: modal-fade-in 0.2s ease-out;
+}
+
+@keyframes modal-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
