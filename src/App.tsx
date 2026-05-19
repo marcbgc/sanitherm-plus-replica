@@ -62,7 +62,7 @@ function FadeIn({
 }
 
 /* ─── Animated Counter (ohne framer-motion) ─── */
-function AnimatedCounter({ target, suffix = '' }: { target: number; suffix?: string }) {
+function AnimatedCounter({ target, suffix = '', decimals = 0 }: { target: number; suffix?: string; decimals?: number }) {
   const ref = useRef<HTMLSpanElement | null>(null)
   const [count, setCount] = useState(0)
   const startedRef = useRef(false)
@@ -70,6 +70,7 @@ function AnimatedCounter({ target, suffix = '' }: { target: number; suffix?: str
   useEffect(() => {
     const el = ref.current
     if (!el) return
+    const factor = Math.pow(10, decimals)
     const obs = new IntersectionObserver(entries => {
       entries.forEach(entry => {
         if (entry.isIntersecting && !startedRef.current) {
@@ -79,7 +80,7 @@ function AnimatedCounter({ target, suffix = '' }: { target: number; suffix?: str
           const animate = (currentTime: number) => {
             const elapsed = currentTime - startTime
             const progress = Math.min(elapsed / duration, 1)
-            setCount(Math.floor(target * progress))
+            setCount(Math.floor(target * progress * factor) / factor)
             if (progress < 1) requestAnimationFrame(animate)
           }
           requestAnimationFrame(animate)
@@ -89,9 +90,9 @@ function AnimatedCounter({ target, suffix = '' }: { target: number; suffix?: str
     })
     obs.observe(el)
     return () => obs.disconnect()
-  }, [target])
+  }, [target, decimals])
 
-  return <span ref={ref}>{count}{suffix}</span>
+  return <span ref={ref}>{count.toFixed(decimals)}{suffix}</span>
 }
 
 /* ─── Typewriter ─── */
@@ -166,14 +167,7 @@ function Navbar() {
             ))}
           </div>
 
-          <div className="hidden md:flex items-center gap-4">
-            <a href="tel:+491796878779" className="relative inline-flex items-center gap-2 bg-fire hover:bg-fire-dark text-white font-semibold px-5 py-2.5 rounded-full transition-all shadow-lg shadow-fire/30 hover:shadow-fire/50">
-              <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-ping" />
-              <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full" />
-              <Phone className="w-4 h-4" />
-              Notdienst 24/7
-            </a>
-          </div>
+          <div className="hidden md:flex items-center gap-4" />
 
           <button onClick={() => setMobileOpen(!mobileOpen)} className={`md:hidden p-2 rounded-lg ${scrolled ? 'text-navy' : 'text-white'}`}>
             {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -187,9 +181,6 @@ function Navbar() {
             {links.map(link => (
               <a key={link.href} href={link.href} onClick={() => setMobileOpen(false)} className="block text-navy font-medium text-lg">{link.label}</a>
             ))}
-            <a href="tel:+491796878779" className="flex items-center justify-center gap-2 bg-fire text-white font-semibold px-5 py-3 rounded-full mt-4">
-              <Phone className="w-4 h-4" /> Notdienst anrufen
-            </a>
           </div>
         </div>
       )}
@@ -199,13 +190,13 @@ function Navbar() {
 
 /* ─── Hero Section ─── */
 function Hero() {
-  const typewriterWords = ['Heizung & Sanitär', 'Badsanierung', 'Wasserschaden-Hilfe', 'Wärmepumpen']
+  const typewriterWords = ['Wasserschaden & Trocknung', 'Bautrocknung', 'Heizung & Sanitär', 'Badsanierung']
 
-  const stats = [
+  const stats: Array<{ value: number; suffix: string; label: string; decimals?: number }> = [
     { value: 20, suffix: '+', label: 'Jahre Erfahrung' },
-    { value: 1000, suffix: '+', label: 'Zufriedene Kunden' },
-    { value: 30, suffix: ' Min', label: 'Reaktionszeit' },
-    { value: 24, suffix: '/7', label: 'Notdienst' },
+    { value: 5000, suffix: '+', label: 'Zufriedene Kunden' },
+    { value: 4.8, suffix: '★', label: 'Google Bewertung', decimals: 1 },
+    { value: 100, suffix: '%', label: 'Meisterbetrieb' },
   ]
 
   return (
@@ -234,7 +225,7 @@ function Hero() {
           </h1>
 
           <p className="text-lg sm:text-xl text-white/80 mb-10 max-w-2xl leading-relaxed">
-            Von der Heizungsinstallation über Badsanierung bis zur schnellen Wasserschadenbeseitigung – wir sind Ihr zuverlässiger Partner in München und Umgebung.
+            Schnelle Wasserschadenregulierung, professionelle Bautrocknung und alles rund um Heizung & Sanitär – seit über 20 Jahren Ihr Meisterbetrieb in München.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4">
@@ -250,7 +241,7 @@ function Hero() {
             {stats.map((stat, i) => (
               <div key={i} className="text-center sm:text-left">
                 <div className="text-2xl sm:text-3xl font-display font-bold text-fire-light">
-                  <AnimatedCounter target={stat.value} suffix={stat.suffix} />
+                  <AnimatedCounter target={stat.value} suffix={stat.suffix} decimals={stat.decimals} />
                 </div>
                 <div className="text-white/60 text-xs sm:text-sm mt-1">{stat.label}</div>
               </div>
